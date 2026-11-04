@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Immunoglobulin Research · Vidarsson Lab</title>
+<meta name="description" content="Immunoglobulin Research group led by Prof. Gestur Vidarsson (Sanquin Research & Utrecht University): IgG glycosylation, Fc receptors, FcRn and alloimmune disease.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfaf7; --surface:#ffffff; --ink:#1b2430; --muted:#5b6573; --line:#e4e1d9;
+  --accent:#0f5c6e; --accent-soft:#e3eff1; --warm:#c8553d; --heavy:#0f5c6e; --light:#6aa7b4; --glycan:#c8553d;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161c; --surface:#18202a; --ink:#e8ecf0; --muted:#9aa6b4; --line:#2a3542;
+    --accent:#6fc0d0; --accent-soft:#1c3038; --warm:#ec8a72; --heavy:#6fc0d0; --light:#3f7f8d; --glycan:#ec8a72;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161c; --surface:#18202a; --ink:#e8ecf0; --muted:#9aa6b4; --line:#2a3542;
+  --accent:#6fc0d0; --accent-soft:#1c3038; --warm:#ec8a72; --heavy:#6fc0d0; --light:#3f7f8d; --glycan:#ec8a72;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.2;margin:0}
+h2{font-size:clamp(1.6rem,3vw,2.1rem);margin-bottom:.4em}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--warm);font-weight:600;margin-bottom:.6em}
+.lead{color:var(--muted);max-width:62ch}
+
+/* nav */
+header.nav{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+.brand{font-family:Fraunces,serif;font-weight:600;text-decoration:none;color:var(--ink);font-size:1.05rem;white-space:nowrap}
+nav a{color:var(--muted);text-decoration:none;font-size:.92rem;margin-left:20px}
+nav a:hover{color:var(--accent)}
+@media (max-width:720px){nav a:not(.keep){display:none}}
+
+/* hero */
+.hero{padding:72px 0 56px}
+.hero .wrap{display:grid;grid-template-columns:1.25fr 1fr;gap:40px;align-items:center}
+.hero h1{font-size:clamp(2.2rem,5vw,3.4rem);margin-bottom:.35em}
+.hero p{font-size:1.08rem}
+.hero .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.tag{background:var(--accent-soft);color:var(--accent);padding:5px 12px;border-radius:999px;font-size:.85rem;font-weight:500}
+.hero svg{width:100%;max-width:380px;height:auto;justify-self:center}
+@media (max-width:820px){.hero .wrap{grid-template-columns:1fr}.hero svg{max-width:260px;order:-1}}
+
+section{padding:64px 0;border-top:1px solid var(--line)}
+
+/* themes */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:28px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.card .num{font-family:Fraunces,serif;color:var(--warm);font-size:1.4rem}
+.card h3{font-size:1.12rem;margin:.3em 0 .5em}
+.card p{color:var(--muted);margin:0;font-size:.95rem}
+
+/* image placeholders */
+.figure{border:1.5px dashed var(--line);border-radius:14px;aspect-ratio:16/9;display:grid;place-items:center;color:var(--muted);font-size:.9rem;text-align:center;padding:16px;background:var(--surface)}
+.figure img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:28px}
+
+/* pubs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0 8px}
+.tabs button{font:inherit;font-size:.9rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 16px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.year{font-family:Fraunces,serif;font-size:1.2rem;margin:28px 0 6px;color:var(--warm)}
+.pub{padding:14px 0;border-bottom:1px solid var(--line)}
+.pub .t{font-weight:600}
+.pub .t a{color:var(--ink);text-decoration:none}
+.pub .t a:hover{color:var(--accent);text-decoration:underline}
+.pub .m{color:var(--muted);font-size:.9rem}
+.pub .m b{color:var(--ink);font-weight:600}
+.note{font-size:.88rem;color:var(--muted);margin-top:18px}
+
+/* team */
+.team{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px;margin-top:28px}
+.person{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
+.avatar{width:72px;height:72px;border-radius:50%;margin:0 auto 10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:Fraunces,serif;font-size:1.3rem;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.person .n{font-weight:600;font-size:.95rem}
+.person .r{color:var(--muted);font-size:.85rem}
+
+/* contact */
+.contact{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:24px}
+footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+.foot .links a{color:var(--muted);margin-right:18px;text-decoration:none}
+.foot .links a:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">Vidarsson Lab</a>
+    <nav>
+      <a href="#research">Research</a>
+      <a href="#publications" class="keep">Publications</a>
+      <a href="#team">Team</a>
+      <a href="#contact" class="keep">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero" style="border-top:0">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Immunoglobulin Research</div>
+      <h1>How antibodies are built decides what they do.</h1>
+      <p class="lead">We study human IgG antibodies, from the B cells that make them to the immune cells that act on them. We focus on how glycosylation, subclass and allotype tune antibody effector functions, and how this shapes alloimmune disease, infection and antibody therapy.</p>
+      <p class="lead" style="margin-top:.8em">Led by Prof. Gestur Vidarsson at <a href="https://www.sanquin.nl/en/research/research-groups/immunoglobulin-research" target="_blank" rel="noopener">Sanquin Research</a>, Amsterdam, with a professorship in Immunoglobulin Biotherapeutics at <a href="https://www.uu.nl/staff/GVidarsson" target="_blank" rel="noopener">Utrecht University</a>.</p>
+      <div class="tags">
+        <span class="tag">IgG glycosylation</span><span class="tag">Fc receptors</span><span class="tag">FcRn</span><span class="tag">FNAIT &amp; HDFN</span><span class="tag">Antibody therapeutics</span>
+      </div>
+    </div>
+    <!-- Stylised IgG: replace with your own image if you like -->
+    <svg viewBox="0 0 300 320" role="img" aria-label="Stylised IgG antibody with Fc glycans">
+      <g stroke-linecap="round" stroke-width="22" fill="none">
+        <!-- Fab arms: heavy (inner) + light (outer) -->
+        <path d="M150 170 L92 92" stroke="var(--heavy)"/>
+        <path d="M150 170 L208 92" stroke="var(--heavy)"/>
+        <path d="M120 78 L70 22" stroke="var(--light)"/>
+        <path d="M180 78 L230 22" stroke="var(--light)"/>
+        <path d="M92 92 L50 40" stroke="var(--heavy)"/>
+        <path d="M208 92 L250 40" stroke="var(--heavy)"/>
+        <!-- Fc -->
+        <path d="M136 178 L136 296" stroke="var(--heavy)"/>
+        <path d="M164 178 L164 296" stroke="var(--heavy)"/>
+      </g>
+      <!-- Fc N-glycans (Asn297) -->
+      <g fill="var(--glycan)">
+        <circle cx="150" cy="214" r="6"/><circle cx="150" cy="232" r="6"/>
+        <rect x="139" y="244" width="10" height="10" rx="2"/><rect x="151" y="244" width="10" height="10" rx="2"/>
+        <circle cx="150" cy="268" r="5" fill="none" stroke="var(--glycan)" stroke-width="3" stroke-dasharray="3 3"/>
+      </g>
+      <text x="176" y="272" font-family="Inter,sans-serif" font-size="11" fill="var(--muted)">core fucose?</text>
+    </svg>
+  </div>
+</section>
+
+<section id="research">
+  <div class="wrap">
+    <div class="eyebrow">Research</div>
+    <h2>Four research lines</h2>
+    <p class="lead">Our work runs from basic antibody biology to diagnostics and better therapeutic antibodies.</p>
+    <div class="grid">
+      <div class="card"><div class="num">01</div><h3>Antibodies against blood cells</h3><p>How alloantibodies and autoantibodies destroy red cells and platelets, as in haemolytic disease of the fetus and newborn (HDFN) and fetal/neonatal alloimmune thrombocytopenia (FNAIT). Disease-specific IgG is often glycosylated differently from the rest of plasma IgG, and this changes its pathogenicity.</p></div>
+      <div class="card"><div class="num">02</div><h3>Where afucosylated IgG comes from</h3><p>Why some immune responses produce IgG lacking core fucose, which strongly boosts FcγRIIIa binding. We find these responses are typical of enveloped viruses and of natural immunity to malaria, and we study how B cells regulate this at the clonal level.</p></div>
+      <div class="card"><div class="num">03</div><h3>FcRn biology</h3><p>How the neonatal Fc receptor keeps IgG in circulation and transports it across the placenta, how it differs between subclasses and allotypes, and what this means for IVIg and FcRn-blocking drugs.</p></div>
+      <div class="card"><div class="num">04</div><h3>From discovery to the clinic</h3><p>Using antibody glycosylation and subclass features to predict disease risk, guide patient management, and engineer more effective antibodies, including monoclonal anti-RhD prophylaxis and glyco-engineered bispecifics.</p></div>
+    </div>
+
+    <!-- IMAGES: drop files into /images and replace each placeholder div with <img src="images/your-file.jpg" alt="..."> -->
+    <div class="figs">
+      <div class="figure">Image placeholder: lab or microscopy<br><small>images/lab.jpg</small></div>
+      <div class="figure">Image placeholder: structure or glycan figure<br><small>images/structure.jpg</small></div>
+    </div>
+  </div>
+</section>
+
+<section id="publications">
+  <div class="wrap">
+    <div class="eyebrow">Publications</div>
+    <h2>Recent work, 2023–2026</h2>
+    <p class="lead">Selected from PubMed. Full list on <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Vidarsson+G%5BAuthor%5D&sort=date" target="_blank" rel="noopener">PubMed</a> and <a href="https://scholar.google.com/citations?user=X8_Vf8IAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a> (ORCID <a href="https://orcid.org/0000-0001-5621-003X" target="_blank" rel="noopener">0000-0001-5621-003X</a>).</p>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-k="group">From our group</button>
+      <button role="tab" aria-selected="false" data-k="collab">Collaborations</button>
+    </div>
+    <div id="publist"></div>
+    <p class="note">* Shared senior authorship.</p>
+  </div>
+</section>
+
+<section id="team">
+  <div class="wrap">
+    <div class="eyebrow">People</div>
+    <h2>Team</h2>
+    <p class="lead">Add photos as images/team/firstname.jpg and set the photo field in the team list near the bottom of this file.</p>
+    <div class="team" id="teamlist"></div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="eyebrow">Contact</div>
+    <h2>Get in touch</h2>
+    <p class="lead">We welcome questions from students, clinicians and collaborators.</p>
+    <div class="contact">
+      <div class="card"><h3>Sanquin Research</h3><p>Immunoglobulin Research<br>Plesmanlaan 125<br>1066 CX Amsterdam, The Netherlands</p><p style="margin-top:.8em"><a href="https://www.sanquin.nl/en/research/research-groups/immunoglobulin-research" target="_blank" rel="noopener">Group page at Sanquin →</a></p></div>
+      <div class="card"><h3>Utrecht University</h3><p>Professor of Immunoglobulin Biotherapeutics<br>Biomolecular Mass Spectrometry and Proteomics<br>Department of Pharmaceutical Sciences</p><p style="margin-top:.8em"><a href="https://www.uu.nl/staff/GVidarsson" target="_blank" rel="noopener">Staff profile at UU →</a></p></div>
+      <div class="card"><h3>Email</h3><p><!-- TODO: put your preferred address here --><a href="mailto:you@vidarsson.nl">you@vidarsson.nl</a></p></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap foot">
+  <div>© <span id="yr"></span> Immunoglobulin Research · Vidarsson Lab</div>
+  <div class="links">
+    <a href="https://www.sanquin.nl/en/research/research-groups/immunoglobulin-research" target="_blank" rel="noopener">Sanquin Research</a>
+    <a href="https://www.uu.nl/staff/GVidarsson" target="_blank" rel="noopener">Utrecht University</a>
+    <a href="https://orcid.org/0000-0001-5621-003X" target="_blank" rel="noopener">ORCID</a>
+    <a href="https://scholar.google.com/citations?user=X8_Vf8IAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a>
+    <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Vidarsson+G%5BAuthor%5D&sort=date" target="_blank" rel="noopener">PubMed</a>
+  </div>
+</div></footer>
+
+<script>
+/* ===== PUBLICATIONS =====
+   To add a paper: copy one line and edit it. type: "group" (last / shared-last author) or "collab".
+   cs: true adds the * shared-senior marker. */
+const pubs = [
+ // ---- own group (last or shared last author) ----
+ {y:2026,type:"group",a:"Rispens T, …, de Taeye S, Vidarsson G",t:"Allotypes matter: evaluation of twelve commercially available antihuman IgG2 antibodies for subclass specificity",j:"J Immunol Methods",doi:"10.1016/j.jim.2026.114086"},
+ {y:2026,type:"group",a:"Oosterhoff JJ, …, van der Schoot CE, Vidarsson G",t:"Altered glycosylation profile of anti-HPA-1a-specific antibodies: insights from a prospective fetal and neonatal alloimmune thrombocytopenia cohort",j:"Haematologica",doi:"10.3324/haematol.2025.288701"},
+ {y:2026,type:"group",cs:true,a:"Stam W, …, Vidarsson G*, Margadant C*",t:"Maternal anti-HPA-1a antibodies block αIIbβ3/αvβ3 integrin activation, and blockade correlates with FNAIT disease severity",j:"Blood",doi:"10.1182/blood.2025031683"},
+ {y:2025,type:"group",cs:true,a:"Oosterhoff JJ, Stam W, …, Vidarsson G*, Margadant C*",t:"HPA-1a antibodies in FNAIT do not distinguish αvβ3 from αIIbβ3, and bind inactive integrins more strongly than active integrins",j:"Blood",doi:"10.1182/blood.2025029618"},
+ {y:2025,type:"group",a:"de Winter DP, …, de Haas M, Vidarsson G",t:"IgG-Fc glycosylation and a novel flow cytometric assay to predict hemolytic disease of the fetus and newborn",j:"Transfus Med Hemother",doi:"10.1159/000547687"},
+ {y:2025,type:"group",a:"Koike G, …, van der Schoot CE, Vidarsson G",t:"Fucosylation limits ADCC in clinically used anti-RhD monoclonal antibodies",j:"Transfusion",doi:"10.1111/trf.18449"},
+ {y:2025,type:"group",a:"Sewnath CAN, …, van Egmond M, Vidarsson G",t:"Enhancing activity of FcαRI-bispecific antibodies using glycoengineering",j:"J Immunol",doi:"10.1093/jimmun/vkaf027"},
+ {y:2024,type:"group",a:"de Graaf EL, …, Wuhrer M, Vidarsson G",t:"Assessment of IgG-Fc glycosylation from individual RhD-specific B cell clones reveals regulation at clonal rather than clonotypic level",j:"Immunology",doi:"10.1111/imm.13737"},
+ {y:2024,type:"group",a:"Oosterhoff JJ, …, van der Schoot CE, Vidarsson G",t:"Generation of human antibodies targeting human platelet antigen (HPA)-1a",j:"Transfusion",doi:"10.1111/trf.17758"},
+ {y:2023,type:"group",a:"Damelang T, Brinkhaus M, van Osch TLJ, Schuurman J, Labrijn AF, Rispens T, Vidarsson G",t:"Impact of structural modifications of IgG antibodies on effector functions (review)",j:"Front Immunol",doi:"10.3389/fimmu.2023.1304365"},
+ {y:2023,type:"group",a:"Szittner Z, …, van der Schoot CE, Vidarsson G",t:"Cellular surface plasmon resonance-based detection of anti-HPA-1a antibody glycosylation in fetal and neonatal alloimmune thrombocytopenia",j:"Front Immunol",doi:"10.3389/fimmu.2023.1225603"},
+ {y:2023,type:"group",a:"Van Coillie J, …, Wuhrer M, Vidarsson G",t:"Comparative analysis of spike-specific IgG Fc glycoprofiles elicited by adenoviral, mRNA, and protein-based SARS-CoV-2 vaccines",j:"iScience",doi:"10.1016/j.isci.2023.107619"},
+ {y:2023,type:"group",a:"Van Coillie J, …, Ehlers M, Vidarsson G",t:"The BNT162b2 mRNA SARS-CoV-2 vaccine induces transient afucosylated IgG1 in naive but not in antigen-experienced vaccinees",j:"EBioMedicine",doi:"10.1016/j.ebiom.2022.104408"},
+ {y:2023,type:"group",a:"van Osch TLJ, …, ten Brinke A, Vidarsson G",t:"Phagocytosis of platelets opsonized with differently glycosylated anti-HLA hIgG1 by monocyte-derived macrophages",j:"Platelets",doi:"10.1080/09537104.2022.2129604"},
+ {y:2023,type:"group",cs:true,a:"Nimmerjahn F*, Vidarsson G*, Cragg MS*",t:"Effect of posttranslational modifications and subclass on IgG activity: from immunity to immunotherapy (review)",j:"Nat Immunol",doi:"10.1038/s41590-023-01544-8"},
+
+ // ---- collaborations (second-to-last author) ----
+ {y:2026,type:"collab",a:"Claushuis B, …, Vidarsson G, Wuhrer M",t:"Antigen-specific IgG glycosylation profiles in hamsters and macaques following COVID-19 vaccination",j:"iScience",doi:"10.1016/j.isci.2026.115400"},
+ {y:2025,type:"collab",a:"Schmidt DE, …, Vidarsson G, de Haas M",t:"Increased effector memory CD4+ T cells are associated with chronic childhood immune thrombocytopenia",j:"J Thromb Haemost",doi:"10.1016/j.jtha.2025.06.004"},
+ {y:2025,type:"collab",a:"Bosman GP, …, Vidarsson G, Boons GJ",t:"Bisecting N-acetylglucosamine of the N-glycan of immunoglobulin G does not affect binding to Fc gamma receptors",j:"ACS Chem Biol",doi:"10.1021/acschembio.4c00807"},
+ {y:2024,type:"collab",a:"Kissel T, …, Vidarsson G, Toes REM",t:"N-linked Fc glycosylation is not required for IgG-B-cell receptor function in a GC-derived B-cell line",j:"Nat Commun",doi:"10.1038/s41467-023-44468-5"},
+ {y:2024,type:"collab",a:"Streng BMM, …, Vidarsson G, Bont LJ",t:"IgG1 glycosylation highlights premature aging in Down syndrome",j:"Aging Cell",doi:"10.1111/acel.14167"},
+ {y:2024,type:"collab",a:"van der Velden S, …, Vidarsson G, Kapur R",t:"Complement activation drives antibody-mediated transfusion-related acute lung injury via macrophage trafficking and formation of NETs",j:"Blood",doi:"10.1182/blood.2023020484"},
+ {y:2024,type:"collab",a:"Resa-Infante P, …, Vidarsson G, Martinez-Picado J",t:"Preclinical development of humanized monoclonal antibodies against CD169 as a broad antiviral therapeutic strategy",j:"Biomed Pharmacother",doi:"10.1016/j.biopha.2024.116726"},
+ {y:2023,type:"collab",a:"Damelang T, …, Vidarsson G, Rispens T",t:"The influence of human IgG subclass and allotype on complement activation",j:"J Immunol",doi:"10.4049/jimmunol.2300307"},
+ {y:2023,type:"collab",a:"Oskam N, …, Vidarsson G, Rispens T",t:"Factors affecting IgG4-mediated complement activation",j:"Front Immunol",doi:"10.3389/fimmu.2023.1087532"},
+ {y:2023,type:"collab",a:"Volkov M, …, Vidarsson G, van der Woude D",t:"IgG Fab glycans hinder FcRn-mediated placental transport",j:"J Immunol",doi:"10.4049/jimmunol.2200438"},
+];
+
+/* ===== TEAM ===== photo: "images/team/name.jpg" (optional) */
+const team = [
+ {n:"Prof. Gestur Vidarsson",r:"Group leader"},
+ {n:"Miles Holborough-Kerkvliet",r:"Postdoc"},
+ {n:"Arthur Bentlage",r:"Senior technician"},
+ {n:"Iris de Cuyper",r:"Senior technician"},
+ {n:"Remco Visser",r:"Senior technician"},
+ {n:"Rivka de Jongh",r:"PhD student"},
+ {n:"Thijs Demmers",r:"PhD student"},
+ {n:"Dirk-Jan Mons",r:"PhD student"},
+ {n:"Annemoon Roeland",r:"PhD student"},
+ {n:"Elvera van der Kooi",r:"PhD student"},
+];
+
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function renderPubs(k){
+  const list=pubs.filter(p=>p.type===k).sort((a,b)=>b.y-a.y);
+  let html="",yr=null;
+  for(const p of list){
+    if(p.y!==yr){yr=p.y;html+=`<div class="year">${yr}</div>`;}
+    const a=esc(p.a).replace(/Vidarsson G\*?/,m=>`<b>${m}</b>`);
+    html+=`<div class="pub"><div class="t"><a href="https://doi.org/${p.doi}" target="_blank" rel="noopener">${esc(p.t)}</a></div><div class="m">${a}. <i>${esc(p.j)}</i> ${p.y}.</div></div>`;
+  }
+  document.getElementById("publist").innerHTML=html;
+}
+document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  renderPubs(b.dataset.k);
+}));
+renderPubs("group");
+
+document.getElementById("teamlist").innerHTML=team.map(p=>{
+  const ini=p.n.replace(/^Prof\.\s*/,"").split(" ").filter(w=>/^[A-Z]/.test(w)).map(w=>w[0]).slice(0,2).join("");
+  const av=p.photo?`<img src="${p.photo}" alt="${esc(p.n)}">`:ini;
+  return `<div class="person"><div class="avatar">${av}</div><div class="n">${esc(p.n)}</div><div class="r">${esc(p.r)}</div></div>`;
+}).join("");
+document.getElementById("yr").textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
