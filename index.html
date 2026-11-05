@@ -86,6 +86,8 @@ ol.top li::before{content:counter(t);color:var(--warm);font-family:Fraunces,seri
 ol.top a{color:var(--ink);text-decoration:none}
 ol.top a:hover{color:var(--accent);text-decoration:underline}
 ol.top .yr{color:var(--muted);font-size:.82rem;margin-top:2px}
+ol.top.scroll{overflow-y:auto;position:relative;scrollbar-width:thin;padding-right:6px;mask-image:linear-gradient(to bottom,#000 calc(100% - 24px),transparent);-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 24px),transparent)}
+ol.top.scroll.end{mask-image:none;-webkit-mask-image:none}
 .stack{display:grid;gap:18px;align-content:start;min-width:0}
 ol.top .nm{font-weight:500}
 ol.top a.nm{color:var(--ink)}
@@ -145,7 +147,7 @@ footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid v
       <p class="lead">We study human IgG antibodies, from the B cells that make them to the immune cells that act on them. We focus on how glycosylation, subclass and allotype tune antibody effector functions, and how this shapes alloimmune disease, infection and antibody therapy.</p>
       <p class="lead" style="margin-top:.8em">Led by Prof. Gestur Vidarsson at <a href="https://www.sanquin.nl/en/research/research-groups/immunoglobulin-research" target="_blank" rel="noopener">Sanquin Research</a>, Amsterdam, with a professorship in Immunoglobulin Biotherapeutics at <a href="https://www.uu.nl/staff/GVidarsson" target="_blank" rel="noopener">Utrecht University</a>.</p>
       <div class="tags">
-        <span class="tag">IgG glycosylation</span><span class="tag">Fc receptors</span><span class="tag">FcRn</span><span class="tag">FNAIT &amp; HDFN</span><span class="tag">Antibody therapeutics</span>
+        <span class="tag">IgG glycosylation</span><span class="tag">Fc receptors</span><span class="tag">FcRn</span><span class="tag">Complement</span><span class="tag">Allotypes</span><span class="tag">FNAIT &amp; HDFN</span><span class="tag">Antibody therapeutics</span>
       </div>
     </div>
     <picture>
@@ -173,9 +175,9 @@ footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid v
   <div class="wrap">
     <div class="eyebrow">Impact</div>
     <h2>Publications at a glance</h2>
-    <p class="lead">Updated automatically from <a href="https://openalex.org/A5001994531" target="_blank" rel="noopener">OpenAlex</a>, an open citation database. Counts are usually somewhat lower than on <a href="https://scholar.google.com/citations?user=X8_Vf8IAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a>, which also indexes theses, preprints and conference abstracts.</p>
+    <p class="lead">Updated automatically: publication counts from <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Vidarsson+G%5BAuthor%5D&sort=date" target="_blank" rel="noopener">PubMed</a>, citations from <a href="https://openalex.org/A5001994531" target="_blank" rel="noopener">OpenAlex</a>, an open citation database. Citation counts are usually somewhat lower than on <a href="https://scholar.google.com/citations?user=X8_Vf8IAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a>, which also counts citations from theses, preprints and conference abstracts.</p>
     <div class="stats">
-      <div class="stat"><div class="v" id="s-works">312</div><div class="k">Publications</div></div>
+      <div class="stat"><div class="v" id="s-works">231</div><div class="k">Publications (PubMed)</div></div>
       <div class="stat"><div class="v" id="s-cites">15,555</div><div class="k">Citations</div></div>
       <div class="stat"><div class="v" id="s-h">61</div><div class="k">h-index</div></div>
       <div class="stat"><div class="v" id="s-i10">186</div><div class="k">i10-index</div></div>
@@ -191,6 +193,7 @@ footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid v
           </div>
         </div>
         <div id="chart"><p class="note">Loading…</p></div>
+        <p class="note" id="chart-note" style="margin-top:8px"></p>
       </div>
       <div class="panel">
         <div class="panel-head">
@@ -200,12 +203,17 @@ footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid v
             <button aria-pressed="false" data-p="recent">Last 5 years</button>
           </div>
         </div>
-        <ol class="top" id="top-collab">
+        <ol class="top scroll" id="top-collab">
           <li><div><span class="nm">Manfred Wuhrer</span><div class="yr">Leiden University Medical Center</div></div><span class="c">64 papers</span></li>
           <li><div><span class="nm">C. Ellen van der Schoot</span><div class="yr">Sanquin / Amsterdam UMC</div></div><span class="c">63 papers</span></li>
           <li><div><span class="nm">Theo Rispens</span><div class="yr">Sanquin</div></div><span class="c">52 papers</span></li>
           <li><div><span class="nm">Masja de Haas</span><div class="yr">Leiden University Medical Center</div></div><span class="c">35 papers</span></li>
           <li><div><span class="nm">Rick Kapur</span><div class="yr">Sanquin</div></div><span class="c">23 papers</span></li>
+          <li><div><span class="nm">Jan G. J. van de Winkel</span><div class="yr">University Medical Center Utrecht</div></div><span class="c">14 papers</span></li>
+          <li><div><span class="nm">Marit J. van Gils</span><div class="yr">Amsterdam UMC</div></div><span class="c">13 papers</span></li>
+          <li><div><span class="nm">Marjolein van Egmond</span><div class="yr">Amsterdam UMC</div></div><span class="c">12 papers</span></li>
+          <li><div><span class="nm">Taco Willem Kuijpers</span><div class="yr">Amsterdam UMC</div></div><span class="c">11 papers</span></li>
+          <li><div><span class="nm">Marrie C.A. Bruin</span><div class="yr">University Medical Center Utrecht</div></div><span class="c">10 papers</span></li>
         </ol>
         <p class="note" style="margin-top:10px">Group leaders by number of joint PubMed-indexed papers (any author position).</p>
       </div>
@@ -401,27 +409,33 @@ document.getElementById("yr").textContent=new Date().getFullYear();
 /* ===== IMPACT (live from OpenAlex; the numbers in the HTML are a fallback snapshot) ===== */
 const OA_AUTHOR="A5001994531";
 const OA_EXTRA=["A5038811242"]; // "G. Vitharsson" (1994). Safe to leave in after OpenAlex merges it: duplicates are skipped.
-let years=[], metric="works_count";
+let pubYears=new Map(), citeYears=new Map(), metric="works_count";
+const PUBMED_TERM="(Vidarsson G[Author] OR Vitharsson G[Author]) NOT published erratum[pt]";
 function drawChart(){
   const el=document.getElementById("chart");
-  if(!years.length){el.innerHTML='<p class="note">Chart unavailable right now.</p>';return;}
+  const src=metric==="works_count"?pubYears:citeYears;
+  if(!src.size){el.innerHTML='<p class="note">Chart unavailable right now.</p>';return;}
   const now=new Date().getFullYear();
-  const first=Math.min(...years.filter(d=>d.works_count>0).map(d=>d.year));
+  const first=Math.min(...[...src.keys()].filter(y=>src.get(y)>0));
   const ys=[];
-  for(let y=first;y<=now;y++) ys.push(years.find(d=>d.year===y)||{year:y,works_count:0,cited_by_count:0});
+  for(let y=first;y<=now;y++) ys.push({year:y,v:src.get(y)||0});
   const W=600,H=240,pl=4,pb=22,pt=16,bw=(W-pl)/ys.length;
-  const max=Math.max(...ys.map(d=>d[metric]),1);
+  const max=Math.max(...ys.map(d=>d.v),1);
   let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${metric==="works_count"?"Publications":"Citations"} per year">`;
   ys.forEach((d,i)=>{
-    const h=(H-pb-pt)*d[metric]/max, x=pl+i*bw, y=H-pb-h;
-    s+=`<rect x="${(x+bw*.15).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*.7).toFixed(1)}" height="${h.toFixed(1)}" rx="2" class="${d.year===now?"partial":""}"><title>${d.year}: ${fmt(d[metric])}${d.year===now?" (so far)":""}</title></rect>`;
-    if(d.year%5===0||(i===ys.length-1&&d.year%5>1)) s+=`<text class="lbl" x="${(x+bw/2).toFixed(1)}" y="${H-6}" text-anchor="middle">${d.year}</text>`;
+    const h=(H-pb-pt)*d.v/max, x=pl+i*bw, y=H-pb-h;
+    s+=`<rect x="${(x+bw*.15).toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*.7).toFixed(1)}" height="${h.toFixed(1)}" rx="2" class="${d.year===now?"partial":""}"><title>${d.year}: ${fmt(d.v)}${d.year===now?" (so far)":""}</title></rect>`;
+    const step=ys.length>20?5:2;
+    if(d.year%step===0||(i===ys.length-1&&d.year%step>1)) s+=`<text class="lbl" x="${(x+bw/2).toFixed(1)}" y="${H-6}" text-anchor="middle">${d.year}</text>`;
   });
-  const peak=ys.reduce((a,b)=>b[metric]>a[metric]?b:a);
+  const peak=ys.reduce((a,b)=>b.v>a.v?b:a);
   const pi=ys.indexOf(peak);
   const px=pl+pi*bw+bw/2, anc=px>W-30?"end":px<30?"start":"middle";
-  s+=`<text class="tip" x="${(anc==="end"?pl+(pi+1)*bw:anc==="start"?pl+pi*bw:px).toFixed(1)}" y="${(pt-4).toFixed(1)}" text-anchor="${anc}">${fmt(peak[metric])}</text>`;
+  s+=`<text class="tip" x="${(anc==="end"?pl+(pi+1)*bw:anc==="start"?pl+pi*bw:px).toFixed(1)}" y="${(pt-4).toFixed(1)}" text-anchor="${anc}">${fmt(peak.v)}</text>`;
   el.innerHTML=s+"</svg>";
+  document.getElementById("chart-note").textContent=metric==="works_count"
+    ?"PubMed-indexed papers by year of publication, excluding errata."
+    :"Citations received each year (OpenAlex records these from 2012 onward).";
 }
 document.querySelectorAll("#chart-seg button").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll("#chart-seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
@@ -429,29 +443,45 @@ document.querySelectorAll("#chart-seg button").forEach(b=>b.addEventListener("cl
   document.getElementById("chart-title").textContent=metric==="works_count"?"Publications per year":"Citations per year";
   drawChart();
 }));
+/* publications per year straight from PubMed (errata excluded); falls back to OpenAlex's PubMed-indexed works */
+async function loadPubYears(){
+  try{
+    const s=await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=2000&term="+encodeURIComponent(PUBMED_TERM)).then(r=>r.json());
+    const ids=s.esearchresult.idlist; if(!ids.length) throw 0;
+    const m=new Map();
+    for(let i=0;i<ids.length;i+=150){
+      if(i) await new Promise(r=>setTimeout(r,400));
+      const x=await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id="+ids.slice(i,i+150).join(",")).then(r=>r.json());
+      for(const id of x.result.uids){const y=parseInt(x.result[id].pubdate,10); if(y) m.set(y,(m.get(y)||0)+1);}
+    }
+    return {years:m,total:ids.length};
+  }catch(e){
+    const g=await fetch(`https://api.openalex.org/works?filter=author.id:${OA_AUTHOR}|${OA_EXTRA.join("|")},type:article|review,has_pmid:true&group_by=publication_year`).then(r=>r.json());
+    const m=new Map(g.group_by.map(x=>[+x.key,x.count]));
+    return {years:m,total:[...m.values()].reduce((a,b)=>a+b,0)};
+  }
+}
 (async()=>{
+  const pubs=loadPubYears().then(r=>{pubYears=r.years; document.getElementById("s-works").textContent=fmt(r.total); if(metric==="works_count")drawChart();}).catch(()=>{});
   try{
     const a=await fetch(`https://api.openalex.org/authors/${OA_AUTHOR}`).then(r=>r.json());
-    let works=a.works_count, cites=a.cited_by_count, i10=a.summary_stats.i10_index;
-    const byYear=new Map(a.counts_by_year.map(c=>[c.year,{...c}]));
+    let cites=a.cited_by_count, i10=a.summary_stats.i10_index;
     /* papers OpenAlex filed under other spellings (e.g. 1994 "G. Vitharsson") — added in unless already merged */
     for(const id of OA_EXTRA){
       try{
-        const w=await fetch(`https://api.openalex.org/works?filter=author.id:${id}&select=id,publication_year,cited_by_count,authorships&per_page=50`).then(r=>r.json());
+        const w=await fetch(`https://api.openalex.org/works?filter=author.id:${id}&select=id,cited_by_count,authorships&per_page=50`).then(r=>r.json());
         for(const x of w.results){
           if(x.authorships.some(s=>s.author&&s.author.id&&s.author.id.endsWith(OA_AUTHOR))) continue;
-          works++; cites+=x.cited_by_count; if(x.cited_by_count>=10) i10++;
-          const c=byYear.get(x.publication_year)||{year:x.publication_year,works_count:0,cited_by_count:0};
-          c.works_count++; byYear.set(x.publication_year,c);
+          cites+=x.cited_by_count; if(x.cited_by_count>=10) i10++;
         }
       }catch(e){}
     }
-    document.getElementById("s-works").textContent=fmt(works);
     document.getElementById("s-cites").textContent=fmt(cites);
     document.getElementById("s-h").textContent=a.summary_stats.h_index;
     document.getElementById("s-i10").textContent=i10;
-    years=[...byYear.values()].sort((p,q)=>p.year-q.year);
+    citeYears=new Map(a.counts_by_year.filter(c=>c.year>=2012).map(c=>[c.year,c.cited_by_count]));
   }catch(e){}
+  await pubs;
   drawChart();
   try{
     const w=await fetch(`https://api.openalex.org/works?filter=author.id:${OA_AUTHOR},type:article|review&sort=cited_by_count:desc&per_page=15&select=title,doi,publication_year,cited_by_count,authorships,primary_location`).then(r=>r.json());
@@ -499,10 +529,23 @@ document.querySelectorAll("#chart-seg button").forEach(b=>b.addEventListener("cl
   }catch(e){}
 })();
 let collabs=[], period="all";
+/* show five rows; the rest (up to ten) scroll inside the panel */
+function fitFive(ol){
+  ol.style.maxHeight="none";
+  const items=ol.children; if(items.length<=5) return;
+  const fifth=items[4];
+  ol.style.maxHeight=(fifth.offsetTop+fifth.offsetHeight+2)+"px"; /* ol is position:relative, so offsets are relative to it */
+}
+fitFive(document.getElementById("top-collab"));
+window.addEventListener("load",()=>fitFive(document.getElementById("top-collab")));
+document.getElementById("top-collab").addEventListener("scroll",e=>{const o=e.target;o.classList.toggle("end",o.scrollTop+o.clientHeight>=o.scrollHeight-4);});
+window.addEventListener("resize",()=>fitFive(document.getElementById("top-collab")));
 function drawCollabs(){
-  const top=collabs.filter(t=>t[period]>0).sort((a,b)=>b[period]-a[period]||b.latest-a.latest).slice(0,5);
-  document.getElementById("top-collab").innerHTML=top.map(t=>
+  const top=collabs.filter(t=>t[period]>0).sort((a,b)=>b[period]-a[period]||b.latest-a.latest).slice(0,10);
+  const ol=document.getElementById("top-collab"); ol.scrollTop=0;
+  ol.innerHTML=top.map(t=>
     `<li><div><a class="nm" href="${esc(t.id)}" target="_blank" rel="noopener">${esc(t.name)}</a><div class="yr">${esc(t.inst)}</div></div><span class="c">${t[period]} paper${t[period]===1?"":"s"}</span></li>`).join("");
+  fitFive(ol);
 }
 document.querySelectorAll("#collab-seg button").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll("#collab-seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
