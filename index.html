@@ -86,6 +86,9 @@ ol.top li::before{content:counter(t);color:var(--warm);font-family:Fraunces,seri
 ol.top a{color:var(--ink);text-decoration:none}
 ol.top a:hover{color:var(--accent);text-decoration:underline}
 ol.top .yr{color:var(--muted);font-size:.82rem;margin-top:2px}
+.stack{display:grid;gap:18px;align-content:start;min-width:0}
+ol.top .nm{font-weight:500}
+ol.top a.nm{color:var(--ink)}
 ol.top .c{font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
 
 /* pubs */
@@ -178,15 +181,34 @@ footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid v
       <div class="stat"><div class="v" id="s-i10">186</div><div class="k">i10-index</div></div>
     </div>
     <div class="impact-grid">
+      <div class="stack">
       <div class="panel">
         <div class="panel-head">
           <h3 id="chart-title">Publications per year</h3>
-          <div class="seg" role="group" aria-label="Chart metric">
+          <div class="seg" role="group" aria-label="Chart metric" id="chart-seg">
             <button aria-pressed="true" data-m="works_count">Publications</button>
             <button aria-pressed="false" data-m="cited_by_count">Citations</button>
           </div>
         </div>
         <div id="chart"><p class="note">Loading…</p></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Top collaborating groups</h3>
+          <div class="seg" role="group" aria-label="Collaborator period" id="collab-seg">
+            <button aria-pressed="true" data-p="all">All time</button>
+            <button aria-pressed="false" data-p="recent">Last 5 years</button>
+          </div>
+        </div>
+        <ol class="top" id="top-collab">
+          <li><div><span class="nm">Manfred Wuhrer</span><div class="yr">Leiden University Medical Center</div></div><span class="c">64 papers</span></li>
+          <li><div><span class="nm">C. Ellen van der Schoot</span><div class="yr">Sanquin / Amsterdam UMC</div></div><span class="c">63 papers</span></li>
+          <li><div><span class="nm">Theo Rispens</span><div class="yr">Sanquin</div></div><span class="c">52 papers</span></li>
+          <li><div><span class="nm">Masja de Haas</span><div class="yr">Leiden University Medical Center</div></div><span class="c">35 papers</span></li>
+          <li><div><span class="nm">Rick Kapur</span><div class="yr">Sanquin</div></div><span class="c">23 papers</span></li>
+        </ol>
+        <p class="note" style="margin-top:10px">Group leaders by number of joint PubMed-indexed papers (any author position).</p>
+      </div>
       </div>
       <div class="panel">
         <div class="panel-head"><h3>Most cited</h3></div>
@@ -387,7 +409,7 @@ function drawChart(){
   const first=Math.min(...years.filter(d=>d.works_count>0).map(d=>d.year));
   const ys=[];
   for(let y=first;y<=now;y++) ys.push(years.find(d=>d.year===y)||{year:y,works_count:0,cited_by_count:0});
-  const W=600,H=330,pl=4,pb=22,pt=16,bw=(W-pl)/ys.length;
+  const W=600,H=240,pl=4,pb=22,pt=16,bw=(W-pl)/ys.length;
   const max=Math.max(...ys.map(d=>d[metric]),1);
   let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${metric==="works_count"?"Publications":"Citations"} per year">`;
   ys.forEach((d,i)=>{
@@ -397,11 +419,12 @@ function drawChart(){
   });
   const peak=ys.reduce((a,b)=>b[metric]>a[metric]?b:a);
   const pi=ys.indexOf(peak);
-  s+=`<text class="tip" x="${(pl+pi*bw+bw/2).toFixed(1)}" y="${(H-pb-(H-pb-pt)-4).toFixed(1)}" text-anchor="middle">${fmt(peak[metric])}</text>`;
+  const px=pl+pi*bw+bw/2, anc=px>W-30?"end":px<30?"start":"middle";
+  s+=`<text class="tip" x="${(anc==="end"?pl+(pi+1)*bw:anc==="start"?pl+pi*bw:px).toFixed(1)}" y="${(pt-4).toFixed(1)}" text-anchor="${anc}">${fmt(peak[metric])}</text>`;
   el.innerHTML=s+"</svg>";
 }
-document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+document.querySelectorAll("#chart-seg button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#chart-seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
   metric=b.dataset.m;
   document.getElementById("chart-title").textContent=metric==="works_count"?"Publications per year":"Citations per year";
   drawChart();
@@ -444,7 +467,49 @@ document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",(
       return `<li><div><a href="${esc(href)}" target="_blank" rel="noopener">${esc(x.title)}</a><div class="yr">${esc(meta)}</div></div><span class="c">${fmt(x.cited_by_count)}</span></li>`;
     }).join("");
   }catch(e){}
+  /* top collaborating groups: tally the last author of every paper where we are not last author */
+  try{
+    let all=[];
+    for(let p=1;p<=5;p++){
+      const j=await fetch(`https://api.openalex.org/works?filter=author.id:${OA_AUTHOR},type:article|review&per_page=200&page=${p}&select=title,publication_year,authorships,ids`).then(r=>r.json());
+      if(!j.results||!j.results.length)break;
+      all.push(...j.results);
+      if(all.length>=j.meta.count)break;
+    }
+    /* count every joint paper per co-author; list only people who led (were last author on) at least one joint paper */
+    const seen=new Set(), tally=new Map(), leaders=new Set(), now=new Date().getFullYear();
+    for(const w of all){
+      if(!w.ids||!w.ids.pmid)continue; /* PubMed-indexed papers only: drops meeting abstracts and repository copies */
+      const k=(w.title||"").toLowerCase(); if(!k||seen.has(k))continue; seen.add(k);
+      const au=w.authorships||[]; if(!au.length)continue;
+      const last=au.find(a=>a.author_position==="last")||au[au.length-1];
+      if(au.length<=60&&last.author&&last.author.id&&!last.author.id.endsWith(OA_AUTHOR)) leaders.add(last.author.id);
+      const ids=new Set();
+      for(const a of au){
+        const id=a.author&&a.author.id; if(!id||id.endsWith(OA_AUTHOR)||ids.has(id))continue; ids.add(id);
+        const t=tally.get(id)||{id,name:a.author.display_name,all:0,recent:0,inst:"",latest:0};
+        t.all++; if(w.publication_year>now-5)t.recent++;
+        const inst=(a.institutions||[])[0];
+        if(w.publication_year>=t.latest){t.latest=w.publication_year; if(inst)t.inst=inst.display_name;}
+        tally.set(id,t);
+      }
+    }
+    collabs=[...tally.values()].filter(t=>leaders.has(t.id));
+    if(collabs.length) drawCollabs();
+  }catch(e){}
 })();
+let collabs=[], period="all";
+function drawCollabs(){
+  const top=collabs.filter(t=>t[period]>0).sort((a,b)=>b[period]-a[period]||b.latest-a.latest).slice(0,5);
+  document.getElementById("top-collab").innerHTML=top.map(t=>
+    `<li><div><a class="nm" href="${esc(t.id)}" target="_blank" rel="noopener">${esc(t.name)}</a><div class="yr">${esc(t.inst)}</div></div><span class="c">${t[period]} paper${t[period]===1?"":"s"}</span></li>`).join("");
+}
+document.querySelectorAll("#collab-seg button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#collab-seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  period=b.dataset.p;
+  if(collabs.length) drawCollabs();
+  else if(period==="recent") document.getElementById("top-collab").innerHTML='<li><div class="yr">Loading…</div></li>';
+}));
 </script>
 </body>
 </html>
