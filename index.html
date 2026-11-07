@@ -93,6 +93,19 @@ ol.top .nm{font-weight:500}
 ol.top a.nm{color:var(--ink)}
 ol.top .c{font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
 
+/* news */
+.news{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:18px;margin-top:28px}
+.newscard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;gap:8px}
+.newscard .top-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.newscard .date{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.pill{font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.pill.collab{background:color-mix(in srgb,var(--warm) 16%,transparent);color:var(--warm)}
+.newscard h3{font-family:Inter,system-ui,sans-serif;font-size:1rem;font-weight:600;line-height:1.4}
+.newscard h3 a{color:var(--ink);text-decoration:none}
+.newscard h3 a:hover{color:var(--accent);text-decoration:underline}
+.newscard .m{color:var(--muted);font-size:.88rem}
+.newscard .m b{color:var(--ink);font-weight:600}
+
 /* pubs */
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0 8px}
 .tabs button{font:inherit;font-size:.9rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 16px;border-radius:999px;cursor:pointer}
@@ -131,6 +144,7 @@ footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid v
     <nav>
       <a href="#research">Research</a>
       <a href="#impact">Impact</a>
+      <a href="#news" id="nav-news" hidden>News</a>
       <a href="#publications" class="keep">Publications</a>
       <a href="#team">Team</a>
       <a href="#contact" class="keep">Contact</a>
@@ -232,17 +246,26 @@ footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid v
   </div>
 </section>
 
+<section id="news" hidden>
+  <div class="wrap">
+    <div class="eyebrow">News</div>
+    <h2>New papers</h2>
+    <p class="lead">Published in the past month, from our group and with our collaborators.</p>
+    <div class="news" id="newslist"></div>
+  </div>
+</section>
+
 <section id="publications">
   <div class="wrap">
     <div class="eyebrow">Publications</div>
-    <h2>Recent work, 2023–2026</h2>
+    <h2 id="pub-heading">Recent work since 2023</h2>
     <p class="lead">Full list on <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Vidarsson+G%5BAuthor%5D&sort=date" target="_blank" rel="noopener">PubMed</a> and <a href="https://scholar.google.com/citations?user=X8_Vf8IAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a> (ORCID <a href="https://orcid.org/0000-0001-5621-003X" target="_blank" rel="noopener">0000-0001-5621-003X</a>).</p>
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected="true" data-k="group">From our group<span class="count" data-c="group"></span></button>
       <button role="tab" aria-selected="false" data-k="collab">Collaborations<span class="count" data-c="collab"></span></button>
     </div>
     <div id="publist"></div>
-    <p class="note">* Shared senior authorship.</p>
+    <p class="note">* Shared senior authorship. <span id="pub-source"></span></p>
   </div>
 </section>
 
@@ -280,11 +303,47 @@ footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid v
 </div></footer>
 
 <script>
-/* ===== PUBLICATIONS =====
-   group  = last or shared-last author. Write the author line in full (a:).
-   collab = everything else. Give first author (f), last author (l) and where
-            you sit: p:"s" second-to-last, p:"m" somewhere in the middle.
-   cs:true adds the * shared-senior marker. */
+/* ===== PUBLICATION SETTINGS (safe to edit) =====
+   The publication lists and News come live from PubMed. Use these to correct what PubMed gets wrong. */
+const PUBS_FROM_YEAR = 2023;   // earliest year shown in the publication lists
+const NEWS_DAYS = 31;          // a paper counts as news for this many days after it appears online
+/* Papers to list under "From our group" even though Vidarsson G is not last author.
+   shared:true puts * on Vidarsson G and every author after him (shared senior authorship). */
+const MOVE_TO_GROUP = {
+  "10.1038/s41598-026-77176-3": {},              // Mons et al. 2026, Sci Rep
+  "10.1182/blood.2025031683":   {shared:true},   // Stam et al. 2026, Blood (with Margadant)
+  "10.1182/blood.2025029618":   {shared:true},   // Oosterhoff et al. 2025, Blood (with Margadant)
+};
+const HIDE = [];               // DOIs to leave off the lists, e.g. ["10.1000/xyz123"]
+/* Papers PubMed doesn't have (yet) under our name. Dropped automatically once PubMed lists the same DOI.
+   Optional date:"2026-11-03" makes one show under News. */
+const NOT_IN_PUBMED = [
+ {y:2026,type:"group",a:"Mons DJ, …, Vidarsson G, Hazenberg MD",t:"Cell-surface expression of the RNA binding protein U5 snRNP200 on acute myeloid leukemia and other tumor cells is independent of FcγR-mediated interactions",j:"Sci Rep",doi:"10.1038/s41598-026-77176-3"},
+ {y:2026,type:"collab",p:"m",f:"Hensen LCM",l:"Weinberger DM",t:"T-cell responses to primary SARS-CoV-2 vaccination in Down syndrome – from childhood to adulthood",j:"Hum Vaccin Immunother",doi:"10.1080/21645515.2026.2670839"},
+];
+
+/* PubMed allows ~3 requests per second: queue them */
+let ncbiChain=Promise.resolve();
+function ncbi(url,as){
+  const job=ncbiChain.then(async()=>{
+    for(let k=0;k<3;k++){
+      try{
+        const r=await fetch(url);
+        if(r.ok){
+          if(as==="text") return await r.text();
+          const j=await r.json(); if(!j.error) return j;
+        }
+      }catch(e){}
+      await new Promise(r=>setTimeout(r,1200));
+    }
+    throw new Error("PubMed unavailable");
+  });
+  ncbiChain=job.catch(()=>{}).then(()=>new Promise(r=>setTimeout(r,400)));
+  return job;
+}
+
+/* ===== FALLBACK PUBLICATION LIST =====
+   Only shown if PubMed can't be reached. Not needed for day-to-day updates. */
 const pubs = [
  // ---- own group ----
  {y:2026,type:"group",a:"Rispens T, …, de Taeye S, Vidarsson G",t:"Allotypes matter: evaluation of twelve commercially available antihuman IgG2 antibodies for subclass specificity",j:"J Immunol Methods",doi:"10.1016/j.jim.2026.114086"},
@@ -376,22 +435,102 @@ function authors(p){
   if(p.a) return p.a;
   return p.p==="s" ? `${p.f}, …, Vidarsson G, ${p.l}` : `${p.f}, …, Vidarsson G, …, ${p.l}`;
 }
+const boldMe=a=>esc(a).replace(/Vi(d|th)arsson G\*?/,m=>`<b>${m}</b>`);
+const linkOf=p=>p.doi?`https://doi.org/${p.doi}`:`https://pubmed.ncbi.nlm.nih.gov/${p.pmid}/`;
+let pubList=pubs.slice(), currentTab="group";
+
 function renderPubs(k){
-  const list=pubs.filter(p=>p.type===k).sort((a,b)=>b.y-a.y);
+  currentTab=k;
+  const list=pubList.filter(p=>p.type===k).sort((a,b)=>b.y-a.y||(b.date||0)-(a.date||0));
   let html="",yr=null;
   for(const p of list){
     if(p.y!==yr){yr=p.y;html+=`<div class="year">${yr}</div>`;}
-    const a=esc(authors(p)).replace(/Vidarsson G\*?/,m=>`<b>${m}</b>`);
-    html+=`<div class="pub"><div class="t"><a href="https://doi.org/${p.doi}" target="_blank" rel="noopener">${esc(p.t)}</a></div><div class="m">${a}. <i>${esc(p.j)}</i> ${p.y}.</div></div>`;
+    html+=`<div class="pub"><div class="t"><a href="${esc(linkOf(p))}" target="_blank" rel="noopener">${esc(p.t)}</a></div><div class="m">${boldMe(authors(p))}. <i>${esc(p.j)}</i> ${p.y}.</div></div>`;
   }
   document.getElementById("publist").innerHTML=html;
+  document.querySelectorAll(".count").forEach(s=>s.textContent=pubList.filter(p=>p.type===s.dataset.c).length);
 }
-document.querySelectorAll(".count").forEach(s=>s.textContent=pubs.filter(p=>p.type===s.dataset.c).length);
 document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
   renderPubs(b.dataset.k);
 }));
+document.getElementById("pub-heading").textContent=`Recent work since ${PUBS_FROM_YEAR}`;
 renderPubs("group");
+
+function renderNews(){
+  const cutoff=Date.now()-NEWS_DAYS*864e5;
+  const items=pubList.filter(p=>p.date&&p.date.getTime()>=cutoff).sort((a,b)=>b.date-a.date);
+  const sec=document.getElementById("news"), nav=document.getElementById("nav-news");
+  if(!items.length){sec.hidden=true;nav.hidden=true;return;}
+  document.getElementById("newslist").innerHTML=items.map(p=>`
+    <article class="newscard">
+      <div class="top-row"><span class="pill ${p.type}">${p.type==="group"?"Our group":"Collaboration"}</span><span class="date">${p.date.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}</span></div>
+      <h3><a href="${esc(linkOf(p))}" target="_blank" rel="noopener">${esc(p.t)}</a></h3>
+      <div class="m">${boldMe(authors(p))}. <i>${esc(p.j)}</i></div>
+    </article>`).join("");
+  sec.hidden=false;nav.hidden=false;
+}
+
+/* ---- live list from PubMed ---- */
+const MONTHS={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+function xmlDate(el){
+  if(!el) return null;
+  const g=t=>(el.getElementsByTagName(t)[0]||{}).textContent||"";
+  const y=parseInt(g("Year"),10); if(!y) return null;
+  const mm=g("Month"); const m=isNaN(+mm)?(MONTHS[mm.slice(0,3).toLowerCase()]??0):(+mm-1);
+  return new Date(y,m,parseInt(g("Day"),10)||1);
+}
+function parseArticle(a){
+  const q=(el,sel)=>{const x=el.querySelector(sel);return x?x.textContent.trim():"";};
+  const art=a.querySelector("MedlineCitation > Article"); if(!art) return null;
+  const au=[...art.querySelectorAll("AuthorList > Author")].filter(x=>x.querySelector("LastName"));
+  const names=au.map(x=>`${q(x,"LastName")} ${q(x,"Initials")}`.trim());
+  const n=names.length, me=names.findIndex(x=>/^Vi(d|th)arsson G/.test(x));
+  if(me<0) return null;
+  const eq=au.map(x=>x.getAttribute("EqualContrib")==="Y");
+  const doi=(q(a,'PubmedData ArticleIdList > ArticleId[IdType="doi"]')||q(art,'ELocationID[EIdType="doi"]')).toLowerCase();
+  if(HIDE.map(d=>d.toLowerCase()).includes(doi)) return null;
+  const pd=art.querySelector("Journal JournalIssue PubDate");
+  const y=parseInt(q(pd,"Year")||q(pd,"MedlineDate"),10);
+  const date=xmlDate(art.querySelector("ArticleDate"))||xmlDate(a.querySelector('PubmedData History PubMedPubDate[PubStatus="pubmed"]'));
+  const override=Object.entries(MOVE_TO_GROUP).find(([d])=>d.toLowerCase()===doi);
+  let type="collab", star=new Set();
+  if(override){type="group"; if(override[1].shared) for(let k=me;k<n;k++) star.add(k);}
+  else if(me===n-1){type="group";}
+  else if(eq[me]&&eq[n-1]){type="group"; for(let k=n-1;k>=0&&eq[k];k--) star.add(k);}
+  if(me===n-1&&eq[me]&&eq[me-1]) for(let k=n-1;k>=0&&eq[k];k--) star.add(k);
+  if(star.size<2) star=new Set();
+  let keep=new Set();
+  if(n<=6) names.forEach((_,k)=>keep.add(k));
+  else{keep.add(0);keep.add(me);keep.add(n-1);if(type==="group"&&me===n-1)keep.add(me-1);star.forEach(k=>keep.add(k));}
+  const parts=[];let prev=-1;
+  [...keep].sort((x,z)=>x-z).forEach(k=>{if(k-prev>1)parts.push("…");parts.push(names[k]+(star.has(k)?"*":""));prev=k;});
+  return {y,type,a:parts.join(", "),t:q(art,"ArticleTitle").replace(/\.$/,""),j:q(art,"Journal ISOAbbreviation")||q(art,"Journal Title"),doi,pmid:q(a,"MedlineCitation > PMID"),date};
+}
+async function loadPubList(){
+  const term=`(Vidarsson G[Author] OR Vitharsson G[Author]) AND ${PUBS_FROM_YEAR}:3000[dp] NOT (published erratum[pt] OR preprint[pt])`;
+  const s=await ncbi("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=1000&term="+encodeURIComponent(term));
+  const ids=s.esearchresult.idlist; if(!ids.length) throw new Error("no ids");
+  const out=[];
+  for(let i=0;i<ids.length;i+=150){
+    const xml=await ncbi("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&retmode=xml&id="+ids.slice(i,i+150).join(","),"text");
+    const d=new DOMParser().parseFromString(xml,"text/xml");
+    for(const a of d.querySelectorAll("PubmedArticle")){const p=parseArticle(a); if(p&&p.y>=PUBS_FROM_YEAR) out.push(p);}
+  }
+  if(!out.length) throw new Error("nothing parsed");
+  const have=new Set(out.map(p=>p.doi));
+  for(const p of NOT_IN_PUBMED){
+    if(have.has(p.doi.toLowerCase())) continue;
+    out.push({...p,date:p.date?new Date(p.date):null});
+  }
+  return out;
+}
+loadPubList().then(list=>{
+  pubList=list;
+  renderPubs(currentTab);
+  renderNews();
+  document.getElementById("pub-source").textContent="Lists update automatically from PubMed.";
+}).catch(()=>{});
 
 document.getElementById("teamlist").innerHTML=team.map(p=>{
   const ini=p.n.replace(/^Prof\.\s*/,"").split(" ").filter(w=>/^[A-Z]/.test(w)).map(w=>w[0]).slice(0,2).join("");
@@ -446,12 +585,11 @@ document.querySelectorAll("#chart-seg button").forEach(b=>b.addEventListener("cl
 /* publications per year straight from PubMed (errata excluded); falls back to OpenAlex's PubMed-indexed works */
 async function loadPubYears(){
   try{
-    const s=await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=2000&term="+encodeURIComponent(PUBMED_TERM)).then(r=>r.json());
+    const s=await ncbi("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=2000&term="+encodeURIComponent(PUBMED_TERM));
     const ids=s.esearchresult.idlist; if(!ids.length) throw 0;
     const m=new Map();
     for(let i=0;i<ids.length;i+=150){
-      if(i) await new Promise(r=>setTimeout(r,400));
-      const x=await fetch("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id="+ids.slice(i,i+150).join(",")).then(r=>r.json());
+      const x=await ncbi("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id="+ids.slice(i,i+150).join(","));
       for(const id of x.result.uids){const y=parseInt(x.result[id].pubdate,10); if(y) m.set(y,(m.get(y)||0)+1);}
     }
     return {years:m,total:ids.length};
