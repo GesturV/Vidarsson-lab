@@ -191,7 +191,7 @@ footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid v
     <h2>Publications at a glance</h2>
     <p class="lead">Updated automatically: publication counts from <a href="https://pubmed.ncbi.nlm.nih.gov/?term=Vidarsson+G%5BAuthor%5D&sort=date" target="_blank" rel="noopener">PubMed</a>, citations from <a href="https://openalex.org/A5001994531" target="_blank" rel="noopener">OpenAlex</a>, an open citation database. Citation counts are usually somewhat lower than on <a href="https://scholar.google.com/citations?user=X8_Vf8IAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a>, which also counts citations from theses, preprints and conference abstracts.</p>
     <div class="stats">
-      <div class="stat"><div class="v" id="s-works">231</div><div class="k">Publications (PubMed)</div></div>
+      <div class="stat"><div class="v" id="s-works">233</div><div class="k">Publications (PubMed)</div></div>
       <div class="stat"><div class="v" id="s-cites">15,555</div><div class="k">Citations</div></div>
       <div class="stat"><div class="v" id="s-h">61</div><div class="k">h-index</div></div>
       <div class="stat"><div class="v" id="s-i10">186</div><div class="k">i10-index</div></div>
@@ -250,7 +250,7 @@ footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid v
   <div class="wrap">
     <div class="eyebrow">News</div>
     <h2>New papers</h2>
-    <p class="lead">Published in the past month, from our group and with our collaborators.</p>
+    <p class="lead">Published in the past three months, from our group and with our collaborators.</p>
     <div class="news" id="newslist"></div>
   </div>
 </section>
@@ -306,7 +306,11 @@ footer{padding:32px 0;color:var(--muted);font-size:.85rem;border-top:1px solid v
 /* ===== PUBLICATION SETTINGS (safe to edit) =====
    The publication lists and News come live from PubMed. Use these to correct what PubMed gets wrong. */
 const PUBS_FROM_YEAR = 2023;   // earliest year shown in the publication lists
-const NEWS_DAYS = 31;          // a paper counts as news for this many days after it appears online
+const NEWS_DAYS = 92;          // a paper counts as news for this many days after it appears online (about 3 months)
+/* Who we are in PubMed. Names are quoted so PubMed matches them exactly;
+   the 1994 paper (spelled "Vitharsson G") is pinned by its PubMed ID. */
+const PUBMED_ME = '("Vidarsson G"[Author] OR 8077716[pmid])';
+const PUBMED_MAX = 600;        // safety net: if PubMed returns more hits than this, the search went wrong; use the backup instead
 /* Papers to list under "From our group" even though Vidarsson G is not last author.
    shared:true puts * on Vidarsson G and every author after him (shared senior authorship). */
 const MOVE_TO_GROUP = {
@@ -508,9 +512,9 @@ function parseArticle(a){
   return {y,type,a:parts.join(", "),t:q(art,"ArticleTitle").replace(/\.$/,""),j:q(art,"Journal ISOAbbreviation")||q(art,"Journal Title"),doi,pmid:q(a,"MedlineCitation > PMID"),date};
 }
 async function loadPubList(){
-  const term=`(Vidarsson G[Author] OR Vitharsson G[Author]) AND ${PUBS_FROM_YEAR}:3000[dp] NOT (published erratum[pt] OR preprint[pt])`;
+  const term=`${PUBMED_ME} AND ${PUBS_FROM_YEAR}:3000[dp] NOT (published erratum[pt] OR preprint[pt])`;
   const s=await ncbi("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=1000&term="+encodeURIComponent(term));
-  const ids=s.esearchresult.idlist; if(!ids.length) throw new Error("no ids");
+  const ids=s.esearchresult.idlist; if(!ids.length||+s.esearchresult.count>PUBMED_MAX) throw new Error("unexpected PubMed result");
   const out=[];
   for(let i=0;i<ids.length;i+=150){
     const xml=await ncbi("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&retmode=xml&id="+ids.slice(i,i+150).join(","),"text");
@@ -549,7 +553,7 @@ document.getElementById("yr").textContent=new Date().getFullYear();
 const OA_AUTHOR="A5001994531";
 const OA_EXTRA=["A5038811242"]; // "G. Vitharsson" (1994). Safe to leave in after OpenAlex merges it: duplicates are skipped.
 let pubYears=new Map(), citeYears=new Map(), metric="works_count";
-const PUBMED_TERM="(Vidarsson G[Author] OR Vitharsson G[Author]) NOT published erratum[pt]";
+const PUBMED_TERM=`${PUBMED_ME} NOT published erratum[pt]`;
 function drawChart(){
   const el=document.getElementById("chart");
   const src=metric==="works_count"?pubYears:citeYears;
@@ -586,7 +590,7 @@ document.querySelectorAll("#chart-seg button").forEach(b=>b.addEventListener("cl
 async function loadPubYears(){
   try{
     const s=await ncbi("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=2000&term="+encodeURIComponent(PUBMED_TERM));
-    const ids=s.esearchresult.idlist; if(!ids.length) throw 0;
+    const ids=s.esearchresult.idlist; if(!ids.length||+s.esearchresult.count>PUBMED_MAX) throw 0;
     const m=new Map();
     for(let i=0;i<ids.length;i+=150){
       const x=await ncbi("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id="+ids.slice(i,i+150).join(","));
